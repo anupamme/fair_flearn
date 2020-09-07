@@ -7,14 +7,15 @@ from flearn.utils.model_utils import Metrics
 from flearn.utils.tf_utils import process_grad, norm_grad, norm_grad_sparse
 
 class BaseFedarated(object):
-    def __init__(self, params, learner, dataset):
+    def __init__(self, params, learner, dataset, dataset_adv=None):
         # transfer parameters to self
         for key, val in params.items(): setattr(self, key, val);
 
         # create worker nodes
         tf.reset_default_graph()
         self.client_model = learner(*params['model_params'], self.q, self.inner_opt, self.seed)
-        self.clients = self.setup_clients(dataset, self.data_partition_seed, self.client_model)
+        
+        self.clients = self.setup_clients(dataset, self.data_partition_seed, dataset_adv, self.client_model)
         print('{} Clients in Total'.format(len(self.clients)))
         self.latest_model = self.client_model.get_params()
 
@@ -24,17 +25,23 @@ class BaseFedarated(object):
     def __del__(self):
         self.client_model.close()
 
-    def setup_clients(self, dataset, data_partition_seed, model=None):
+    def setup_clients(self, dataset, data_partition_seed, dataset_adv, model=None):
         '''instantiates clients based on given train and test data directories
 
         Return:
             list of Clients
         '''
         users, groups, train_data, test_data = dataset
+        # AM: 
+        users_adv, groups_adv, train_data_adv, test_data_adv = dataset_adv
         if len(groups) == 0:
             groups = [None for _ in users]
+        if len(groups_adv) == 0:
+            groups_adv = [None for _ in users_adv]
         all_clients = [Client(u, g, train_data[u], test_data[u],  data_partition_seed, model) for u, g in zip(users, groups)]
-        return all_clients
+        # AM: 
+        all_clients_adv = [Client(u, g, train_data_adv[u], test_data_adv[u],  data_partition_seed, model, is_adversary=True) for u, g in zip(users_adv, groups_adv)]
+        return (all_clients + all_clients_adv)
 
     def train_error(self):
         num_samples = []

@@ -2,10 +2,13 @@ import numpy as np
 
 class Client(object):
     
-    def __init__(self, id, group=None, train_data={'x':[],'y':[]}, eval_data={'x':[],'y':[]}, data_seed=1, model=None):
+    def __init__(self, id, group=None, train_data={'x':[],'y':[]}, eval_data={'x':[],'y':[]}, data_seed=1, model=None, is_adversary=False):
         self.model = model
         self.id = id # integer
         self.group = group
+        
+        self.cache = {} # AM: empty object.
+        self.is_adversary = is_adversary  # AM
 
         data_x = train_data['x'] + eval_data['x']
         data_y = train_data['y'] + eval_data['y']
@@ -18,7 +21,7 @@ class Client(object):
 
         else:
             ## for cross validation
-            np.random.seed(data_seed)  
+            np.random.seed(data_seed)
             rng_state = np.random.get_state()
             np.random.shuffle(data_x)
             np.random.set_state(rng_state)

@@ -22,8 +22,8 @@ class Server(BaseFedarated):
         for i in range(self.num_rounds+1):
             if i % self.eval_every == 0:
                 num_test, num_correct_test = self.test() # have set the latest model for all clients
-                num_train, num_correct_train = self.train_error()  
-                num_val, num_correct_val = self.validate()  
+                num_train, num_correct_train = self.train_error()
+                num_val, num_correct_val = self.validate()
                 tqdm.write('At round {} testing accuracy: {}'.format(i, np.sum(np.array(num_correct_test)) * 1.0 / np.sum(np.array(num_test))))
                 tqdm.write('At round {} training accuracy: {}'.format(i, np.sum(np.array(num_correct_train)) * 1.0 / np.sum(np.array(num_train))))
                 tqdm.write('At round {} validating accuracy: {}'.format(i, np.sum(np.array(num_correct_val)) * 1.0 / np.sum(np.array(num_val))))

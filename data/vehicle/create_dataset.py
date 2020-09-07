@@ -39,7 +39,8 @@ def generate_data():
         print("ratio, ", num * 1.0 / len(raw_y[i][0]))
     return X, y
     
-
+def generate_poisoned_data():
+    pass
 
 def main():
 

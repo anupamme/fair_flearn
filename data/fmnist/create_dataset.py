@@ -50,7 +50,7 @@ def main():
     test_output = "./data/test/mytest.json"
 
 
-    X_train, y_train, X_test, y_test = generate_dataset() 
+    X_train, y_train, X_test, y_test = generate_dataset()
 
     
     # Create data structure
